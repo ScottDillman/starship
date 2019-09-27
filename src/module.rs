@@ -1,4 +1,5 @@
 use crate::config::Config;
+use crate::config::SegmentConfig;
 use crate::segment::Segment;
 use ansi_term::Style;
 use ansi_term::{ANSIString, ANSIStrings};
@@ -58,18 +59,38 @@ impl<'a> Module<'a> {
             config,
             _name: name.to_string(),
             style: Style::default(),
-            prefix: Affix::default_prefix(name),
+            prefix: Affix::default_prefix(
+                name,
+                config
+                    .and_then(|config| config.get_as_str("prefix"))
+                    .unwrap_or("via "),
+                config
+                    .and_then(|config| config.get_as_ansi_style("prefix_style"))
+                    .unwrap_or(Style::default())),
             segments: Vec::new(),
-            suffix: Affix::default_suffix(name),
+            suffix: Affix::default_suffix(
+                name,
+                config
+                    .and_then(|config| config.get_as_str("suffix"))
+                    .unwrap_or(" "),
+                config
+                    .and_then(|config| config.get_as_ansi_style("suffix_style"))
+                    .unwrap_or(Style::default()),
+            ),
         }
     }
 
     /// Get a reference to a newly created segment in the module
     pub fn new_segment(&mut self, name: &str, value: &str) -> &mut Segment {
         let mut segment = Segment::new(name);
-        segment.set_style(self.style);
-        // Use the provided value unless overwritten by config
-        segment.set_value(self.config_value_str(name).unwrap_or(value));
+        if let Some(segment_config) = self.config_value_segment_config(name) {
+            segment.set_style(segment_config.style.unwrap_or(self.style));
+            segment.set_value(segment_config.value.unwrap_or(value));
+        } else {
+            segment.set_style(self.style);
+            // Use the provided value unless overwritten by config
+            segment.set_value(self.config_value_str(name).unwrap_or(value));
+        }
         self.segments.push(segment);
 
         self.segments.last_mut().unwrap()
@@ -165,6 +186,12 @@ impl<'a> Module<'a> {
     pub fn config_value_array(&self, key: &str) -> Option<&Vec<toml::Value>> {
         self.config.and_then(|config| config.get_as_array(key))
     }
+
+    /// Get a module's config value as a table of segment config
+    pub fn config_value_segment_config(&self, key: &str) -> Option<SegmentConfig> {
+        self.config
+            .and_then(|config| config.get_as_segment_config(key))
+    }
 }
 
 impl<'a> fmt::Display for Module<'a> {
@@ -229,19 +256,19 @@ pub struct Affix {
 }
 
 impl Affix {
-    pub fn default_prefix(name: &str) -> Self {
+    pub fn default_prefix(name: &str, prefix: &str, style: Style) -> Self {
         Self {
             _name: format!("{}_prefix", name),
-            style: Style::default(),
-            value: "via ".to_string(),
+            style: style,
+            value: prefix.to_string(),
         }
     }
 
-    pub fn default_suffix(name: &str) -> Self {
+    pub fn default_suffix(name: &str, suffix: &str,style: Style) -> Self {
         Self {
             _name: format!("{}_suffix", name),
-            style: Style::default(),
-            value: " ".to_string(),
+            style: style,
+            value: suffix.to_string(),
         }
     }
 

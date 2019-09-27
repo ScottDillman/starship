@@ -18,7 +18,9 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
                 .config_value_style("style")
                 .unwrap_or_else(|| Color::Red.bold());
             module.set_style(module_style);
-            module.get_prefix().set_value("is ");
+            
+            // this is now handled by prefix styling
+            // module.get_prefix().set_value("is ");
 
             module.new_segment("symbol", PACKAGE_CHAR);
             module.new_segment("version", &package_version);

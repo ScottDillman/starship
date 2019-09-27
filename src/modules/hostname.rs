@@ -30,11 +30,11 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
         }
     };
 
-    let prefix = module.config_value_str("prefix").unwrap_or("").to_owned();
-    let suffix = module.config_value_str("suffix").unwrap_or("").to_owned();
+    //let prefix = module.config_value_str("prefix").unwrap_or("").to_owned();
+    //let suffix = module.config_value_str("suffix").unwrap_or("").to_owned();
 
     module.set_style(module_style);
-    module.new_segment("hostname", &format!("{}{}{}", prefix, host, suffix));
+    module.new_segment("hostname", &host);
     module.get_prefix().set_value("on ");
 
     Some(module)

@@ -15,7 +15,9 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
         .config_value_style("style")
         .unwrap_or_else(|| Color::Purple.bold());
     module.set_style(segment_color);
-    module.get_prefix().set_value("on ");
+
+    // This is now handled by prefix styling
+    // module.get_prefix().set_value("on ");
 
     let unsafe_truncation_length = module
         .config_value_i64("truncation_length")

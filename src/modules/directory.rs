@@ -84,7 +84,8 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     module.new_segment("path", &truncated_dir_string);
 
-    module.get_prefix().set_value("in ");
+    // This is now handled by prefix styling
+    // module.get_prefix().set_value("in ");
 
     Some(module)
 }

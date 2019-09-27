@@ -39,7 +39,9 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     module.set_style(module_color);
     module.new_segment("cmd_duration", &format!("took {}", render_time(elapsed)));
-    module.get_prefix().set_value("");
+
+    // Handled by prefix styling
+    //module.get_prefix().set_value("");
 
     Some(module)
 }
