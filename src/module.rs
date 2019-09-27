@@ -63,7 +63,7 @@ impl<'a> Module<'a> {
                 name,
                 config
                     .and_then(|config| config.get_as_str("prefix"))
-                    .unwrap_or("via "),
+                    .unwrap_or(" "),
                 config
                     .and_then(|config| config.get_as_ansi_style("prefix_style"))
                     .unwrap_or(Style::default())),

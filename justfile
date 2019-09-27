@@ -1,6 +1,6 @@
 #!/usr/bin/env just --justfile
 
-all: build
+all: build docopy
 
 build:
     cargo build --release
@@ -16,3 +16,9 @@ changelog:
 
 clean:
     cargo clean
+
+docopy:
+	cp {{invocation_directory()}}/target/release/starship /home/ctrauma/.local/bin
+
+watch:
+    watchexec -e rs -w ./src just all

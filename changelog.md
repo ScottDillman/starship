@@ -8,4 +8,3 @@
 * **main/modules:**  add segment prefix/suffix styling ([595f27aa](https://github.com/ScottDillman/starship/commit/595f27aa1c99e319013af1a1f52424df041c771e))
 
 
-

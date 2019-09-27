@@ -15,7 +15,7 @@ link-style = "github"
 # Do not use with outfile or infile fields!
 #
 # Defaults to stdout when omitted
-# changelog = "changelog.md"
+changelog = "changelog.md"
 
 # This sets an output file only! If it exists already, new changelog data will be
 # prepended, if not it will be created.
@@ -24,7 +24,7 @@ link-style = "github"
 # that you would like to append after newly created clog data
 #
 # Defaults to stdout when omitted
-outfile = "changelog.md"
+# outfile = "changelog.md"
 
 # This sets the input file old! Any data inside this file will be appended to any
 # new data that clog picks up

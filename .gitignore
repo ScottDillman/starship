@@ -15,6 +15,9 @@ Cargo.lock
 .idea/
 /*.iml
 
+# vs code history files
+.history
+
 # Compiled files for documentation
 docs/node_modules
 docs/.vuepress/dist/
