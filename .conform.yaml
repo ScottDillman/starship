@@ -1,0 +1,61 @@
+policies:
+  - type: commit
+    spec:
+      headerLength: 89
+      dco: false
+      gpg: false
+      imperative: true
+      maximumOfOneCommit: true
+      requireCommitBody: true
+      conventional:
+        types:
+          - "feat"
+          - "fix"
+          - "docs"
+          - "style"
+          - "refactor"
+          - "perf"
+          - "test"
+        scopes:
+          - "module"
+          - "main"
+          - "lib"
+          - "utils"
+          - "config"
+          - "directory"
+          - "package"
+          - "battery"
+          - "character"
+          - "cmd:duration"
+          - "git:branch"
+          - "git:state"
+          - "git:status"
+          - "golang"
+          - "hostname"
+          - "java"
+          - "jobs"
+          - "line_breaks"
+          - "nix_shell"
+          - "nodejs"
+          - "package"
+          - "python"
+          - "ruby"
+          - "rust"
+          - "time"
+          - "username"
+          - "doc"
+          - "build"
+          - "automation"
+  # - type: license
+  #   spec:
+  #     skipPaths:
+  #     - .git/
+  #     - target/
+  #     - .history
+  #     - .vscode
+  #     includeSuffixes:
+  #     - .rs
+  #     excludeSuffixes:
+  #     - .exclude-ext-prefix.ext
+  #     header: |
+  #       This is the contents of a license header.
