@@ -1,8 +1,16 @@
 use ansi_term::Color;
 use path_slash::PathExt;
 use std::path::Path;
+use crate::utils;
+use serde::{Deserialize};
 
 use super::{Context, Module};
+
+#[derive(Debug, Deserialize)]
+struct StarshipFile {
+    symbol: Option<String>,
+    style: Option<String>,
+}
 
 /// Creates a module with the current directory
 ///
@@ -17,12 +25,29 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
     const HOME_SYMBOL: &str = "~";
     const DIR_TRUNCATION_LENGTH: i64 = 3;
     const FISH_STYLE_PWD_DIR_LENGTH: i64 = 0;
+    const SEPARATOR: &str = "/";
+
+    let has_custom = context
+        .try_begin_scan()?
+        .set_files(&[".starship"])
+        .set_extensions(&[])
+        .set_folders(&[])
+        .is_match();
+
 
     let mut module = context.new_module("directory");
     let module_color = module
         .config_value_style("style")
         .unwrap_or_else(|| Color::Cyan.bold());
     module.set_style(module_color);
+
+    let separator = module
+        .config_value_str("separator")
+        .unwrap_or(SEPARATOR).to_owned();
+
+    let home_symbol = module
+        .config_value_str("home_symbol")
+        .unwrap_or(HOME_SYMBOL).to_owned();
 
     let truncation_length = module
         .config_value_i64("truncation_length")
@@ -64,7 +89,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
             contract_path(current_dir, repo_root, repo_folder_name)
         }
         // Contract the path to the home directory
-        _ => contract_path(current_dir, &home_dir, HOME_SYMBOL),
+        _ => contract_path(current_dir, &home_dir, &home_symbol),
     };
 
     // Truncate the dir string to the maximum number of path components
@@ -72,7 +97,7 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
 
     if fish_style_pwd_dir_length > 0 {
         // If user is using fish style path, we need to add the segment first
-        let contracted_home_dir = contract_path(&current_dir, &home_dir, HOME_SYMBOL);
+        let contracted_home_dir = contract_path(current_dir, &home_dir, &home_symbol);
         let fish_style_dir = to_fish_style(
             fish_style_pwd_dir_length as usize,
             contracted_home_dir,
@@ -82,10 +107,29 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
         module.new_segment("path", &fish_style_dir);
     }
 
-    module.new_segment("path", &truncated_dir_string);
+    let components = Path::new(&truncated_dir_string).components();
+    let mut first: bool = true;
+    for component in components {
+        
+        if !first { 
+            module.new_segment("path", &separator );
+        } 
+        first = false;
+        module.new_segment("path", &component.as_os_str().to_str().unwrap());
+    }
+    if has_custom {
 
-    // This is now handled by prefix styling
-    // module.get_prefix().set_value("in ");
+        if let Ok(starship_file) = utils::read_file(".starship"){
+
+            let decoded: StarshipFile = toml::from_str(&starship_file).unwrap();
+
+            let custom_symbol = decoded.symbol.unwrap_or("".to_string());
+            // For when segment styles are supported
+            // let custom_style = decoded.style.unwrap_or("".to_string());
+
+             module.new_segment("path", &custom_symbol );
+        }
+    }
 
     Some(module)
 }
