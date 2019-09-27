@@ -119,11 +119,13 @@ pub fn module<'a>(context: &'a Context) -> Option<Module<'a>> {
     }
     if has_custom {
 
+        // Use styling from .starship file to enhance component segment
         if let Ok(starship_file) = utils::read_file(".starship"){
 
             let decoded: StarshipFile = toml::from_str(&starship_file).unwrap();
 
             let custom_symbol = decoded.symbol.unwrap_or("".to_string());
+
             // For when segment styles are supported
             // let custom_style = decoded.style.unwrap_or("".to_string());
 
